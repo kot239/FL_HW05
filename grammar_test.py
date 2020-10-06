@@ -31,6 +31,9 @@ def test_simple_error6():
 def test_simple_error7():
 	assert not parse_file('test_files/simple_error7.txt')
 
+def test_simple_error8():
+	assert not parse_file('test_files/simple_error8.txt')
+
 def test_empty():
 	assert parse_file('test_files/empty.txt')
 
@@ -38,10 +41,7 @@ def test_with_empty_lines():
 	assert parse_file('test_files/empty_lines.txt')
 
 def test_parentheses():
-	assert not parse_file('test_files/parentheses.txt')
-
-def test_parentheses_with_true():
-	assert not parse_file('test_files/parentheses2.txt')
+	assert parse_file('test_files/parentheses.txt')
 
 def test_without_spaces():
 	assert parse_file('test_files/antispace.txt')
@@ -63,6 +63,12 @@ def test_simple_new1():
 
 def test_simple_new2():
 	assert parse_file('test_files/simple_new2.txt')
+
+def test_simple_new3():
+	assert parse_file('test_files/simple_new3.txt')
+
+def test_simple_new4():
+	assert parse_file('test_files/simple_new4.txt')
 
 def test_simple_new_error1():
 	assert not parse_file('test_files/simple_new_error1.txt')

@@ -2,69 +2,99 @@ from lexer import *
 import ply.yacc as yacc 
 import sys
 
-def p_program(p):
-    '''
-
-        program : sentence DOT program
-                | sentence DOT 
-
-    '''
-    if len(p) == 4:
-        p[0] = p[1] + '.\n' + p[3]
-    else:
-        p[0] = p[1] + '.\n' 
-
 def p_sentence(p):
     '''
 
-        sentence : atom SEN disj
-                 | atom 
+        sentence : atom SEN conj DOT sentence
+                 | atom DOT sentence
+                 | atom SEN conj DOT 
+                 | atom DOT 
 
     '''
-    if len(p) == 4:
-        p[0] = 'HEAD( ' + p[1] + ' ) BODY( ' + p[3]+ ' )'
+    if len(p) == 6:
+        p[0] = 'HEAD( ' + p[1] + ' ) BODY( ' + p[3] + ' )\n' + p[5]
+    elif len(p) == 4:
+        p[0] = 'HEAD( ' + p[1] + ' )\n' + p[3]
+    elif len(p) == 5:
+        p[0] = 'HEAD( ' + p[1] + ' ) BODY( ' + p[3] + ' )'
     else:
         p[0] = 'HEAD( ' + p[1] + ' )'
 
 def p_disj(p):
     '''
 
-        disj : conj DISJ disj
-             | conj
+        disj : subatom DISJ disj
+             | subatom
 
     '''
-    if len(p) == 4:
-        p[0] = 'DISJ( ' + p[1] + ' )   ( ' + p[3] + ' )'
+    if len(p) == 4 and p[3] == ';':
+        p[0] = 'DISJ ( ' + p[1] + ' )  ( ' + p[3] + ' )'
     else:
         p[0] = p[1]
 
 def p_conj(p):
     '''
 
-        conj : atom
-             | atom CONJ conj
-             | OPENBR disj CLOSEBR
+        conj : disj CONJ conj
+             | disj 
 
     '''
-    if len(p) == 2:
-        p[0] = 'ATOM ' + p[1]
-    elif p[2] == ',':
-        p[0] = 'CONJ( ' + p[1] + ' )   ( ' + p[3] + ' )'
+    if len(p) == 4:
+        p[0] = 'CONJ ( ' + p[1] + ' )  ( ' + p[3] + ' )'
     else:
+        p[0] = p[1]
+
+def p_subatom(p):
+    '''
+
+        subatom : OPENBR conj CLOSEBR
+                | atom
+             
+    '''
+    if len(p) == 4:
         p[0] = '( ' + p[2] + ' )'
+    else:
+        p[0] = p[1]
 
 def p_atom(p):
     '''
 
-        atom : OPENBR atom CLOSEBR
-             | LIT atom
-             | LIT
+        atom : LIT seq
+             | LIT 
+
+    '''
+    if len(p) == 3:
+        p[0] = '(ATOM ' + p[1] + ' ' + p[2] + ' )'
+    else:
+        p[0] = '(ATOM ' + p[1] + ')'
+
+def p_seq(p):
+    '''
+
+        seq : OPENBR atombr CLOSEBR seq
+            | OPENBR atombr CLOSEBR
+            | LIT seq
+            | LIT
+
+    '''
+    if len(p) == 5:
+        p[0] = '( ' + p[2] + ' )' + p[4]
+    elif len(p) == 4:
+        p[0] = '( ' + p[2] + ' )'
+    elif len(p) == 3:
+        p[0] = '(ATOM ' + p[1] + ') ' +  p[2]
+    else:
+        p[0] = '(ATOM ' + p[1] + ')'
+
+def p_atombr(p):
+    '''
+
+        atombr : OPENBR atombr CLOSEBR
+               | atom
 
     '''
     if len(p) == 4:
-        p[0] = '(ATOM ' + p[2] + ') ' 
-    elif len(p) == 3:
-        p[0] = p[1] + ' ATOM ' + p[2]
+        p[0] = '( ' + p[2] + ' )'
     else:
         p[0] = p[1]
 
