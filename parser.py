@@ -1,6 +1,7 @@
 from lexer import *
 import ply.yacc as yacc 
 import sys
+import re
 
 def p_sentence(p):
     '''
@@ -112,7 +113,8 @@ def parse_file(file_name):
 
     output_file = open(file_name + '.out', 'w')
 
-    if inp == "":
+    regex = re.compile(r'^[ \n\t]*$')
+    if regex.match(inp):
         output_file.write("Empty file")
         output_file.close()
         return True
