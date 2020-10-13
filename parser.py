@@ -5,12 +5,10 @@ import re
 
 def p_sentence(p):
     '''
-
-        sentence : atom SEN conj DOT sentence
+        sentence : atom SEN disj DOT sentence
                  | atom DOT sentence
-                 | atom SEN conj DOT 
+                 | atom SEN disj DOT 
                  | atom DOT 
-
     '''
     if len(p) == 6:
         p[0] = 'HEAD( ' + p[1] + ' ) BODY( ' + p[3] + ' )\n' + p[5]
@@ -23,22 +21,18 @@ def p_sentence(p):
 
 def p_disj(p):
     '''
-
-        disj : subatom DISJ disj
-             | subatom
-
+        disj : conj DIS disj
+             | conj
     '''
-    if len(p) == 4 and p[3] == ';':
+    if len(p) == 4:
         p[0] = 'DISJ ( ' + p[1] + ' )  ( ' + p[3] + ' )'
     else:
         p[0] = p[1]
 
 def p_conj(p):
     '''
-
-        conj : disj CONJ conj
-             | disj 
-
+        conj : subatom CON conj
+             | subatom 
     '''
     if len(p) == 4:
         p[0] = 'CONJ ( ' + p[1] + ' )  ( ' + p[3] + ' )'
@@ -47,8 +41,7 @@ def p_conj(p):
 
 def p_subatom(p):
     '''
-
-        subatom : OPENBR conj CLOSEBR
+        subatom : OPENBR disj CLOSEBR
                 | atom
              
     '''
@@ -59,10 +52,8 @@ def p_subatom(p):
 
 def p_atom(p):
     '''
-
         atom : LIT seq
              | LIT 
-
     '''
     if len(p) == 3:
         p[0] = '(ATOM ' + p[1] + ' ' + p[2] + ' )'
@@ -71,12 +62,10 @@ def p_atom(p):
 
 def p_seq(p):
     '''
-
         seq : OPENBR atombr CLOSEBR seq
             | OPENBR atombr CLOSEBR
             | LIT seq
             | LIT
-
     '''
     if len(p) == 5:
         p[0] = '( ' + p[2] + ' )' + p[4]
@@ -89,10 +78,8 @@ def p_seq(p):
 
 def p_atombr(p):
     '''
-
         atombr : OPENBR atombr CLOSEBR
                | atom
-
     '''
     if len(p) == 4:
         p[0] = '( ' + p[2] + ' )'
